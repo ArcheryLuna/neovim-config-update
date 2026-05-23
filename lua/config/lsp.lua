@@ -1,11 +1,23 @@
 local M = {}
 
+M.servers = {
+  "clangd",
+  "ts_ls",
+  "eslint",
+  "tailwindcss",
+  "html",
+  "cssls",
+  "jsonls",
+}
+
 local diagnostic_signs = {
   [vim.diagnostic.severity.ERROR] = "E",
   [vim.diagnostic.severity.WARN] = "W",
   [vim.diagnostic.severity.HINT] = "H",
   [vim.diagnostic.severity.INFO] = "I",
 }
+
+local js_ts_filetypes = require("config.formatters").js_ts_filetypes
 
 function M.setup()
   vim.diagnostic.config({
@@ -21,21 +33,24 @@ function M.setup()
     },
   })
 
-  vim.lsp.config("lua_ls", {
-    settings = {
-      Lua = {
-        diagnostics = { globals = { "vim" } },
-        workspace = {
-          checkThirdParty = false,
-          library = vim.api.nvim_get_runtime_file("", true),
-        },
-      },
+  -- C / C++
+  vim.lsp.config("clangd", {
+    filetypes = { "c", "cpp", "objc", "objcpp" },
+    root_markers = { "compile_commands.json", "compile_flags.txt", ".git" },
+    cmd = {
+      "clangd",
+      "--background-index",
+      "--clang-tidy",
+      "--header-insertion=iwyu",
+    },
+    capabilities = {
+      offsetEncoding = { "utf-16" },
     },
   })
 
-  -- TypeScript + JavaScript (ts_ls covers .ts, .tsx, .js, .jsx)
+  -- TypeScript / JavaScript / TSX / JSX (ts_ls)
   vim.lsp.config("ts_ls", {
-    filetypes = require("config.formatters").js_ts_filetypes,
+    filetypes = js_ts_filetypes,
     root_markers = { "package.json", "tsconfig.json", "jsconfig.json", "node_modules" },
     settings = {
       typescript = {
@@ -58,9 +73,28 @@ function M.setup()
   })
 
   vim.lsp.config("eslint", {
-    filetypes = require("config.formatters").js_ts_filetypes,
+    filetypes = js_ts_filetypes,
     settings = {
       workingDirectories = { mode = "auto" },
+    },
+  })
+
+  -- Web: HTML / CSS / Tailwind
+  vim.lsp.config("html", {
+    filetypes = { "html", "htm" },
+    settings = {
+      html = {
+        format = { enable = false },
+      },
+    },
+  })
+
+  vim.lsp.config("cssls", {
+    filetypes = { "css", "scss", "less" },
+    settings = {
+      css = { validate = true },
+      scss = { validate = true },
+      less = { validate = true },
     },
   })
 
@@ -72,11 +106,12 @@ function M.setup()
       "html",
       "javascript",
       "javascriptreact",
+      "jsx",
       "typescript",
       "typescriptreact",
+      "tsx",
       "vue",
       "svelte",
-      "heex",
     },
     root_markers = {
       "tailwind.config.js",
@@ -103,20 +138,16 @@ function M.setup()
     },
   })
 
+  vim.lsp.config("jsonls", {
+    filetypes = { "json", "jsonc" },
+    settings = {
+      json = { format = { enable = false } },
+    },
+  })
+
   require("mason").setup()
   require("mason-lspconfig").setup({
-    ensure_installed = {
-      "lua_ls",
-      "ts_ls",
-      "eslint",
-      "tailwindcss",
-      "pyright",
-      "jsonls",
-      "html",
-      "cssls",
-      "bashls",
-      "rust_analyzer",
-    },
+    ensure_installed = M.servers,
     handlers = {
       function(server)
         vim.lsp.enable(server)

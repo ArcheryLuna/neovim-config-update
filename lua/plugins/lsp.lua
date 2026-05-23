@@ -2,43 +2,43 @@ return {
   {
     "williamboman/mason.nvim",
     cmd = "Mason",
+    build = ":MasonUpdate",
     opts = {
       ui = {
         icons = {
-          package_installed = "✓",
-          package_pending = "➜",
-          package_uninstalled = "✗",
+          package_pending = "󰥔 ",
+          package_installed = "󰄬 ",
+          package_uninstalled = "󰅙 ",
         },
       },
+      max_concurrent_installers = 20,
     },
   },
   {
     "williamboman/mason-lspconfig.nvim",
-    dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
-    opts = {},
+    dependencies = {
+      "williamboman/mason.nvim",
+      "neovim/nvim-lspconfig",
+    },
     config = function()
       require("config.lsp").setup()
     end,
   },
   {
     "neovim/nvim-lspconfig",
-    dependencies = { "williamboman/mason-lspconfig.nvim" },
   },
   {
     "saghen/blink.cmp",
     version = "*",
+    event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
-      "neovim/nvim-lspconfig",
       "rafamadriz/friendly-snippets",
+      "neovim/nvim-lspconfig",
     },
     opts = {
       keymap = { preset = "default" },
-      appearance = {
-        nerd_font_variant = "mono",
-      },
-      completion = {
-        documentation = { auto_show = true },
-      },
+      appearance = { nerd_font_variant = "mono" },
+      completion = { documentation = { auto_show = true } },
       sources = {
         default = { "lsp", "path", "snippets", "buffer" },
       },

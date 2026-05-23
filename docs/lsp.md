@@ -1,69 +1,46 @@
 # LSP & formatters
 
+Modern stack for **Neovim 0.11+** — no lsp-zero, no null-ls. Uses `vim.lsp.enable`, **conform.nvim**, **blink.cmp**.
+
+## Scope
+
+| Area | LSP (Mason) | Format (conform) |
+|------|-------------|------------------|
+| C / C++ | `clangd` | `clang-format` |
+| TypeScript / JavaScript / TSX / JSX | `ts_ls`, `eslint` | `prettierd` / `prettier` |
+| HTML / CSS / JSON | `html`, `cssls`, `jsonls` | prettier |
+| Tailwind | `tailwindcss` | — |
+
+Not installed: Python, Rust, Lua LSP, Biome LSP, cmake, mypy, ruff, etc.
+
 ## Where things live
 
 | Concern | Path |
 |--------|------|
-| Plugin specs (LSP) | `lua/plugins/lsp.lua` |
-| Plugin specs (formatters) | `lua/plugins/formatters.lua` |
-| LSP config, servers, keymaps | `lua/config/lsp.lua` |
-| Prettier / conform | `lua/config/formatters.lua` |
-| All keymaps | `lua/config/keymaps.lua` |
+| Plugin specs | `lua/plugins/lsp.lua`, `lua/plugins/formatters.lua` |
+| LSP servers | `lua/config/lsp.lua` |
+| Formatters | `lua/config/formatters.lua` |
+| Keymaps | `lua/config/keymaps.lua` |
 | Autocommands | `lua/config/autocmds.lua` |
 
-## Stack
+## LSP keymaps (buffer-local)
 
-- **mason.nvim** — LSP servers + CLI tools
-- **mason-lspconfig.nvim** — LSP ↔ Mason
-- **mason-tool-installer.nvim** — Prettier, eslint_d
-- **nvim-lspconfig** — server definitions (`vim.lsp.enable`)
-- **conform.nvim** — format on save + `<leader>f`
-- **blink.cmp** — completion
+`gd` `gD` `gi` `gr` `K` `<C-h>` (insert) `<leader>rn` `<leader>ca`
 
-## TypeScript & JavaScript
+## Global
 
-| Tool | Role |
-|------|------|
-| `ts_ls` | Types, go-to-def, rename, completions |
-| `eslint` | ESLint diagnostics + fixable rules from project config |
-| `prettierd` / `prettier` | Format via conform (LSP format disabled on `ts_ls` to avoid fights) |
-
-Filetypes: `javascript`, `javascriptreact`, `typescript`, `typescriptreact`, plus `.jsx` / `.tsx` variants.
-
-Needs a project root (`package.json`, `tsconfig.json`, or `jsconfig.json`).
-
-## Tailwind CSS
-
-| Tool | Role |
-|------|------|
-| `tailwindcss` | Class completion, lint, `@apply` / variant hints in JS/TS/HTML/CSS |
-
-Works best with `tailwind.config.*` or Tailwind in `package.json`. Class regex includes `cva()` and quoted strings for utility-in-JS patterns.
-
-## Other LSP servers
-
-`lua_ls`, `pyright`, `jsonls`, `html`, `cssls`, `bashls`, `rust_analyzer`
-
-Edit `ensure_installed` in `lua/config/lsp.lua` or tools in `lua/plugins/formatters.lua`.
-
-## Keymaps
-
-All bindings live in `lua/config/keymaps.lua`. Press `<Space>` for which-key.
-
-**LSP (buffer-local when attached):** `gd`, `gD`, `gi`, `gr`, `K`, `<leader>rn`, `<leader>ca`
-
-**Diagnostics (global):** `[d`, `]d`, `<leader>e`
-
-**Tools:** `<leader>f` format, `<leader>cm` Mason, `<leader>n` / `<leader>N` Neo-tree, `<leader>u` undotree
-
-Format on save enabled for JS/TS (and other conform filetypes).
+`[d` `]d` `<leader>e` diagnostics · `<leader>f` format · `<leader>cm` Mason
 
 ## Commands
 
-- `:Mason` — servers & tools
-- `:ConformInfo` — formatter for current buffer
-- `:checkhealth vim.lsp` — LSP health
+`:Mason` · `:ConformInfo` · `:checkhealth vim.lsp` · `:TSUpdate` · `:TSInstall tsx`
+
+TSX highlighting needs the **tsx** treesitter parser (not plain `typescript`). Run `:TSInstall tsx` if `.tsx` files look uncolored.
+
+## C projects
+
+`clangd` wants `compile_commands.json` (CMake: `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`) or `compile_flags.txt`.
 
 ## First run
 
-Open Neovim in a JS/TS project. Mason installs `ts_ls`, `eslint`, `tailwindcss`, and `prettierd`. Run `:Mason` if anything is missing.
+`:Lazy sync` then `:Mason` to confirm servers. Install `tree-sitter-cli` for treesitter parsers.

@@ -1,32 +1,40 @@
 local M = {}
 
 local prettier = { "prettierd", "prettier", stop_after_first = true }
+local clang = { "clang_format", "clang-format", stop_after_first = true }
 
-local js_ts = {
+M.js_ts_filetypes = {
   "javascript",
   "javascriptreact",
   "javascript.jsx",
+  "jsx",
   "typescript",
   "typescriptreact",
   "typescript.tsx",
+  "tsx",
 }
 
 function M.setup()
   require("conform").setup({
     formatters_by_ft = {
+      -- JS / TS
       javascript = prettier,
       javascriptreact = prettier,
       ["javascript.jsx"] = prettier,
       typescript = prettier,
       typescriptreact = prettier,
       ["typescript.tsx"] = prettier,
-      json = prettier,
-      jsonc = prettier,
+      tsx = prettier,
+      jsx = prettier,
+      -- Web
       html = prettier,
       css = prettier,
       scss = prettier,
-      markdown = prettier,
-      yaml = prettier,
+      json = prettier,
+      jsonc = prettier,
+      -- C / C++
+      c = clang,
+      cpp = clang,
     },
     default_format_opts = {
       lsp_format = "fallback",
@@ -41,7 +49,5 @@ end
 function M.format(opts)
   return require("conform").format(opts)
 end
-
-M.js_ts_filetypes = js_ts
 
 return M

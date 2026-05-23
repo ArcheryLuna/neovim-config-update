@@ -7,6 +7,7 @@ return {
         "prettierd",
         "prettier",
         "eslint_d",
+        "clang-format",
       },
       auto_update = false,
       run_on_start = true,
@@ -19,7 +20,6 @@ return {
       "williamboman/mason.nvim",
       "WhoIsSethDaniel/mason-tool-installer.nvim",
     },
-    opts = {},
     config = function()
       require("config.formatters").setup()
     end,
