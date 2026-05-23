@@ -1,0 +1,24 @@
+# Plugin lockfiles
+lazy-lock.json
+packer_compiled.lua
+rocks.lock
+shada/
+
+nvim.log
+
+# Runtime / session
+*.swp
+*.swo
+*~
+.netrwhist
+Session.vim
+undo/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local overrides (optional personal tweaks)
+lua/local/
